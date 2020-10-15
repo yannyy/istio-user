@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
+
+	"os"
 
 	pb "github.com/yannyy/istio-user/proto"
 	"google.golang.org/grpc"
@@ -20,11 +23,23 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Greeting: "Hello " + in.GetName()}, nil
 }
 
+var (
+	defaultPort = "80" //默认端口
+)
+
 func main() {
-	lis, err := net.Listen("tcp", port)
+	port := os.Getenv("PORT")
+	bind := os.Getenv("BIND")
+	if port == "" {
+		port = defaultPort
+	}
+	url := fmt.Sprintf("%s:%s", bind, port)
+
+	lis, err := net.Listen("tcp", url)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	s := grpc.NewServer()
 	pb.RegisterUserServer(s, &server{})
 	s.Serve(lis)
