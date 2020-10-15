@@ -23,5 +23,5 @@ clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)
 run: grpc
-	$(GOBUILD) SW/document	
+	$(GOBUILD) $(PACKAGE)
 	./$(BINARY_NAME)
